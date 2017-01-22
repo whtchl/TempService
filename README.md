@@ -32,3 +32,41 @@ class MyBinder extends Binder {
 
 }
 <img src="https://raw.githubusercontent.com/whtchl/TempService/master/art/1.jpg"/>
+
+
+2. 
+创建前台Service
+
+Service几乎都是在后台运行的，一直以来它都是默默地做着辛苦的工作。但是Service的系统优先级还是比较低的，当系统出现内存不足情况时，就有可能会回收掉正在后台运行的Service。如果你希望Service可以一直保持运行状态，而不会由于系统内存不足的原因导致被回收，就可以考虑使用前台Service。前台Service和普通Service最大的区别就在于，它会一直有一个正在运行的图标在系统的状态栏显示，下拉状态栏后可以看到更加详细的信息，非常类似于通知的效果。当然有时候你也可能不仅仅是为了防止Service被回收才使用前台Service，有些项目由于特殊的需求会要求必须使用前台Service，比如说墨迹天气，它的Service在后台更新天气数据的同时，还会在系统状态栏一直显示当前天气的信息
+
+MyService.java
+
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "onCreate() executed: thread id:"+Thread.currentThread().getId());
+
+        /*Notification notification = new Notification(R.drawable.ic_launcher,
+                "有通知到来", System.currentTimeMillis());*/
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, 0);
+
+        /*notification.setLatestEventInfo(this, "这是通知的标题", "这是通知的内容",
+                pendingIntent);*/
+
+        Notification notification = new Notification.Builder(getApplicationContext())
+                .setAutoCancel(true)
+                .setContentTitle("title")
+                .setContentText("describe")
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+                .build();
+
+
+        startForeground(1, notification);
+        Log.d(TAG, "onCreate() executed");
+
+    }
+
+<img src="https://raw.githubusercontent.com/whtchl/TempService/master/art/2.jpg"/>
